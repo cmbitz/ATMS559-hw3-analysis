@@ -1,0 +1,193 @@
+{
+ "cells": [
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import glob\n",
+    "import pandas as pd\n",
+    "import numpy as np\n",
+    "import xarray as xr"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# make a climatology from the CMIP6 model archive files\n",
+    "\n",
+    "redundant with script CMIP6extract.csh"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "def fixmonth(dfile):\n",
+    "\n",
+    "    \"\"\"Fix CESM months since by default the timestamp is for the first day of\n",
+    "    the next month\n",
+    "\n",
+    "    Parameters\n",
+    "    ----------\n",
+    "\n",
+    "    dfile : xarray dataset\n",
+    "            Dataset containing time to fix\n",
+    "\n",
+    "    Returns\n",
+    "    -------\n",
+    "\n",
+    "    dfile : xarray dataset\n",
+    "            Fixed dataset\n",
+    "    \"\"\"\n",
+    "\n",
+    "    mytime = dfile['time'][:].data\n",
+    "    for time in range(mytime.size):\n",
+    "        if mytime[time].month > 1:\n",
+    "            mytime[time] = mytime[time].replace(month=mytime[time].month-1)\n",
+    "        elif mytime[time].month == 1:\n",
+    "            mytime[time] = mytime[time].replace(month=12)\n",
+    "            mytime[time] = mytime[time].replace(year=mytime[time].year-1)\n",
+    "\n",
+    "    dfile = dfile.assign_coords(time=mytime)\n",
+    "\n",
+    "    return dfile"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# FIRST PLACE YOU NEED TO EDIT\n",
+    "classoutputdata = '/glade/derecho/scratch/bitz/ATMS559HW3classruns/' # stash the results here CHANGE NAME TO YOURS\n",
+    "\n",
+    "case = 'b.e21.B1850.f19_g17.CMIP6-piControl-2deg.001'     # for the piControl for example  \n",
+    "#case = 'b.e21.BCO2x4.f19_g17.CMIP6-abrupt4xCO2-2deg.001' # or the 4XCO2\n",
+    "\n",
+    "avar = 'VT' # let's say you want a climatology this variable "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "['/glade/campaign/collections/cmip/CMIP6/timeseries-cmip6/b.e21.B1850.f19_g17.CMIP6-piControl-2deg.001/atm/proc/tseries/month_1/b.e21.B1850.f19_g17.CMIP6-piControl-2deg.001.cam.h0.VT.000101-005012.nc',\n",
+       " '/glade/campaign/collections/cmip/CMIP6/timeseries-cmip6/b.e21.B1850.f19_g17.CMIP6-piControl-2deg.001/atm/proc/tseries/month_1/b.e21.B1850.f19_g17.CMIP6-piControl-2deg.001.cam.h0.VT.005101-010012.nc',\n",
+       " '/glade/campaign/collections/cmip/CMIP6/timeseries-cmip6/b.e21.B1850.f19_g17.CMIP6-piControl-2deg.001/atm/proc/tseries/month_1/b.e21.B1850.f19_g17.CMIP6-piControl-2deg.001.cam.h0.VT.010101-015012.nc',\n",
+       " '/glade/campaign/collections/cmip/CMIP6/timeseries-cmip6/b.e21.B1850.f19_g17.CMIP6-piControl-2deg.001/atm/proc/tseries/month_1/b.e21.B1850.f19_g17.CMIP6-piControl-2deg.001.cam.h0.VT.015101-020012.nc',\n",
+       " '/glade/campaign/collections/cmip/CMIP6/timeseries-cmip6/b.e21.B1850.f19_g17.CMIP6-piControl-2deg.001/atm/proc/tseries/month_1/b.e21.B1850.f19_g17.CMIP6-piControl-2deg.001.cam.h0.VT.020101-025012.nc',\n",
+       " '/glade/campaign/collections/cmip/CMIP6/timeseries-cmip6/b.e21.B1850.f19_g17.CMIP6-piControl-2deg.001/atm/proc/tseries/month_1/b.e21.B1850.f19_g17.CMIP6-piControl-2deg.001.cam.h0.VT.025101-030012.nc',\n",
+       " '/glade/campaign/collections/cmip/CMIP6/timeseries-cmip6/b.e21.B1850.f19_g17.CMIP6-piControl-2deg.001/atm/proc/tseries/month_1/b.e21.B1850.f19_g17.CMIP6-piControl-2deg.001.cam.h0.VT.030101-035012.nc',\n",
+       " '/glade/campaign/collections/cmip/CMIP6/timeseries-cmip6/b.e21.B1850.f19_g17.CMIP6-piControl-2deg.001/atm/proc/tseries/month_1/b.e21.B1850.f19_g17.CMIP6-piControl-2deg.001.cam.h0.VT.035101-040012.nc',\n",
+       " '/glade/campaign/collections/cmip/CMIP6/timeseries-cmip6/b.e21.B1850.f19_g17.CMIP6-piControl-2deg.001/atm/proc/tseries/month_1/b.e21.B1850.f19_g17.CMIP6-piControl-2deg.001.cam.h0.VT.040101-045012.nc',\n",
+       " '/glade/campaign/collections/cmip/CMIP6/timeseries-cmip6/b.e21.B1850.f19_g17.CMIP6-piControl-2deg.001/atm/proc/tseries/month_1/b.e21.B1850.f19_g17.CMIP6-piControl-2deg.001.cam.h0.VT.045101-050012.nc']"
+      ]
+     },
+     "execution_count": 4,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "casedir = '/glade/campaign/collections/cmip/CMIP6/timeseries-cmip6/'+case+'/atm/proc/tseries/month_1/'\n",
+    "files=sorted(glob.glob(casedir+case+'.cam.h0.'+avar+'.*.nc'))  \n",
+    "files   # this should provide you with a list of all the years possible, next you need to choose one file and start/end dates"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# SECOND PLACE YOU MAY NEED TO EDIT\n",
+    "ncfile=files[0] # take the first of the files, here for example, you can choose any one\n",
+    "datestart = '001001'  # yyyymm\n",
+    "dateend   = '002912'"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# we want these info variables in files of 3D variables\n",
+    "keepers=['P0',\n",
+    " 'hyai',\n",
+    " 'hyam',\n",
+    " 'hybi',\n",
+    " 'hybm']\n",
+    "\n",
+    "ds=xr.open_dataset(ncfile)\n",
+    "ds=fixmonth(ds)\n",
+    "\n",
+    "if ('lev' in ds[avar].dims):  # keep the keepers and add PS to the climatology, which is handy for regridding sigma to pressure\n",
+    "    climatology = ds[avar].groupby(\"time.month\").mean(\"time\")\n",
+    "    ds=ds[keepers]  # begin new Dataset with just the keepers\n",
+    "    PSncfile = ncfile.replace('.'+avar+'.', '.PS.')\n",
+    "    dsp=xr.open_dataset(PSncfile)\n",
+    "    dsp=fixmonth(dsp)\n",
+    "    PSpclimatology = dsp['PS'].groupby(\"time.month\").mean(\"time\")\n",
+    "    dsp = []\n",
+    "    ds['PS'] = PSpclimatology # now add PS climotology\n",
+    "    ds[avar] = climatology   # and the 3D climatology\n",
+    "    ds=ds.rename({'month':'time'})\n",
+    "    ds.to_netcdf(classoutputdata+case+'_'+avar+'_climo.nc')\n",
+    "else:                                                              # this is just a simple 2D field\n",
+    "    climatology = ds[avar].groupby(\"time.month\").mean(\"time\")\n",
+    "    climatology=climatology.rename({'month':'time'})\n",
+    "    climatology.to_netcdf(classoutputdata+case+'_'+avar+'_climo.nc')"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 7,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "ds = []"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 8,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "climatology = []"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "NPL 2024a",
+   "language": "python",
+   "name": "npl-2024a"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.11.6"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 4
+}
