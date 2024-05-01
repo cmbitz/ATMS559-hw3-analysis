@@ -21,7 +21,7 @@ cd /glade/work/$USER
 git clone https://github.com/cmbitz/ATMS559-hw3-analysis.git
 ```
 
-## Start the notebooks in the LatLonMaps, EnergyTransport, ZonalMeans, and  OceanAnalysis
+## Start the notebooks in one of the subdirectories: LatLonMaps, EnergyTransport, ZonalMeans, and  OceanAnalysis
 Navigate to the directory where you just put the code with the directory tree on the left.
 Then choose one of the four directories, Click on the notebook and check it out.
 Note the KernelFB directoy is not ready for prime time. I'll let you know when it is.
