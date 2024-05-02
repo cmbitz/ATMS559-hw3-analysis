@@ -8,10 +8,13 @@ set processpiControl = y
 set processQuadCO2 = y
 
 # please edit me
-set ADFout = /glade/derecho/scratch/$USER/ATMS559HW3classruns/AtmosClimoss/
+set ADFout = /glade/derecho/scratch/$USER/ATMS559HW3classruns/AtmosClimos/
 
 # get geopotential heights (Z3) be sure to include PS with 3D spatial variables
 set vars = (LHFLX SHFLX PRECSC PRECSL)
+set vars = (FLUT FLUTC FSNSC FLNSC)
+set vars = (PS FSDS)
+
 
 # add PS to the 3D variables so they can be regridded sigma to pressure coordinates with ease
 set addPS2vars = ()

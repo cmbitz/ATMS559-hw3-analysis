@@ -12,6 +12,7 @@ set ADFout = /glade/derecho/scratch/$USER/ATMS559HW3classruns/OceanClimos
 
 #set vars = (SALT TEMP HBLT) 
 set vars = (N_HEAT MOC) 
+set vars = (SALT) 
 
 #--------------------------------------------------
 

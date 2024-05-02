@@ -7,15 +7,18 @@
 
 
 # please edit me!
-set cases = (DoubleCO2 AlotofCH4 RaiseSolar LowerSolar DirtyAir IcyNA DarkIce NoTrees FlatTibet FlatAntarctica FlatRockies)
-set student = (aydenvdb rcbarr1 nwharton congdong ericmei jaypillai geraint lnzhang adhall skygale smheflin)
+set cases = (piControl DoubleCO2 AlotofCH4 RaiseSolar LowerSolar DirtyAir IcyNA DarkIce NoTrees FlatTibet FlatAntarctica FlatRockies)
+set student = (bitz aydenvdb rcbarr1 nwharton congdong ericmei jaypillai geraint lnzhang adhall skygale smheflin)
 
-set prefernames = (DoubleCO2 AlotofCH4 RaiseSolar LowerSolar DirtyAir IcyNA DarkSeaIce NoTrees FlatTibet FlatTibet-Antarctica FlatTibet-Antarctica-Rockies)
+set prefernames = (piControl DoubleCO2 AlotofCH4 RaiseSolar LowerSolar DirtyAir IcyNA DarkSeaIce NoTrees FlatTibet FlatTibet-Antarctica FlatTibet-Antarctica-Rockies)
 	    
-set ADFout = /glade/derecho/scratch/$USER/ATMS559HW3classruns/AtmosClimoss
+set ADFout = /glade/derecho/scratch/$USER/ATMS559HW3classruns/AtmosClimos
+set ADFout = /glade/derecho/scratch/$USER/ADF/climo/FullyCoupled
 
 # example get geopotential heights (Z3) be sure to include PS with 3D spatial variables
 set vars = (LHFLX SHFLX PRECSC PRECSL)
+set vars = (FLUT FLUTC FSNSC FLNSC)
+set vars = (FSDS)
 
 # must add PS to the 3D variables so they can be regridded sigma to pressure coordinates with ease
 # Z3 is a 3D variable so include it in the example
@@ -28,7 +31,7 @@ set addPS2vars = ()
 mkdir -p $ADFout
 
 set n = 1
-while ($n < 12)
+while ($n < 13)
     set case = ${cases[$n]}
     set pref = ${prefernames[$n]}
     set casedir = /glade/derecho/scratch/${student[$n]}/archive/${case}/atm/hist/

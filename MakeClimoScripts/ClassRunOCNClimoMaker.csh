@@ -7,18 +7,17 @@
 # please edit me!
 set ADFout = /glade/derecho/scratch/$USER/ATMS559HW3classruns/OceanClimos/
 
-set cases = (DoubleCO2 AlotofCH4 RaiseSolar LowerSolar DirtyAir IcyNA DarkIce NoTrees FlatTibet FlatAntarctica FlatRockies)
-set student = (aydenvdb rcbarr1 nwharton congdong ericmei jaypillai geraint lnzhang adhall skygale smheflin)
+set cases = (piControl DoubleCO2 AlotofCH4 RaiseSolar LowerSolar DirtyAir IcyNA DarkIce NoTrees FlatTibet FlatAntarctica FlatRockies)
+set student = (bitz aydenvdb rcbarr1 nwharton congdong ericmei jaypillai geraint lnzhang adhall skygale smheflin)
 
-#set vars = (TEMP SALT HBLT)
-set vars = (N_HEAT MOC)
+set vars = (N_HEAT MOC SALT TEMP HBLT)
 
 #--------------------------------------------------
 
 # make directory if it does not exist
 mkdir -p $ADFout
 set n = 1
-while ($n < 12)
+while ($n < 13)
     set case = ${cases[$n]}
     set casedir = /glade/derecho/scratch/${student[$n]}/archive/${case}/ocn/hist/
     echo $casedir
